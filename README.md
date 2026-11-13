@@ -42,7 +42,6 @@
 
 3. 重启 Noctalia 或切换一次壁纸/主题，触发模板渲染。
 
-
 ## 调参
 
 按钮尺寸/圆角/间距来自 `~/.config/umbriel/config.toml`：
