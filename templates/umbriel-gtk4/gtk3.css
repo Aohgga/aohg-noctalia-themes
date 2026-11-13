@@ -3,7 +3,7 @@
  * such as Seahorse ( 密码和密钥 ), which never read the GTK4 stylesheet. */
 
 /* Overall left inset of the window controls. */
-headerbar > box {
+headerbar box.left {
   padding-left: 9px;
 }
 
@@ -68,3 +68,12 @@ headerbar button.titlebutton.minimize:active,
 button.titlebutton.minimize:active {
   background-color: {{ colors.secondary.default.hex | darken 8 }};
 }
+
+/* Square the buttons when the window is maximized (umbriel does the same). */
+window.maximized headerbar button.titlebutton,
+window.maximized button.titlebutton,
+window:maximized headerbar button.titlebutton,
+window:maximized button.titlebutton {
+  border-radius: 0;
+}
+

@@ -104,3 +104,4 @@ window.csd.maximized headerbar windowcontrols > button > image,
 window.csd.maximized headerbar.default-decoration windowcontrols > button > image {
   border-radius: 0;
 }
+
