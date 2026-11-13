@@ -28,10 +28,7 @@
 
 ## 依赖
 
-- Noctalia 5.5+（用户模板机制；注意当前版本不支持 `input_path_dynamic`，本模板用 `pre_hook` 生成动态输入）
 - umbriel（提供配色、`[appearance] corner_radius`、`[appearance.title_bar]` 按钮参数）
-- fcitx5（可选）
-
 ## 安装
 
 1. 复制模板到 Noctalia 配置目录：
@@ -57,12 +54,6 @@
 - `[appearance.title_bar] button_corner_radius` — 按钮圆角；`-1` 跟随窗口圆角
 
 派生尺寸输出时：奇数 +1、偶数保持（保证偶数）。fcitx5 圆角规则：`corner_radius` 为 0/1 时直角，否则使用 mellow 默认 9.5px。
-
-## 已知限制
-
-- GTK 应用不支持动态重载 `gtk.css`（GTK 上游限制），重启应用才生效。
-- Firefox/Zen 的 userChrome 只在浏览器启动时加载，重启生效。
-- Flutter 应用（如 LocalSend）不读 GTK/Qt CSS，不受本模板影响。
 
 ## License
 
