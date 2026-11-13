@@ -1,4 +1,6 @@
-# Noctalia Umbriel Themes
+# aohg-noctalia-themes
+
+> 本项目内容（模板、脚本、文档）由 AI 生成，仅供参考和个人使用；应用前请自行审查。
 
 一组 Noctalia 用户模板：umbriel 风格的窗口按钮（GTK4 / GTK3 / Firefox·Zen），以及 fcitx5 的 mellow 风格配色主题。
 
