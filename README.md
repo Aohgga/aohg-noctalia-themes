@@ -42,7 +42,6 @@
 
 3. 重启 Noctalia 或切换一次壁纸/主题，触发模板渲染。
 
-4. 重启 GTK 应用（GTK 不支持热重载 `gtk.css`）、重启 Firefox/Zen（userChrome 只在启动时加载）。
 
 ## 调参
 
