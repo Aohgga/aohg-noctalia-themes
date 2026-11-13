@@ -29,6 +29,7 @@
 ## 依赖
 
 - umbriel（提供配色、`[appearance] corner_radius`、`[appearance.title_bar]` 按钮参数）
+
 ## 安装
 
 1. 复制模板到 Noctalia 配置目录：
