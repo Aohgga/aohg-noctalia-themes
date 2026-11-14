@@ -1,6 +1,9 @@
 /* Noctalia user template: GTK3 window buttons styled like Umbriel.
- * Imported into ~/.config/gtk-3.0/gtk.css by apply-gtk3.sh. Covers GTK3 apps
- * such as Seahorse ( 密码和密钥 ), which never read the GTK4 stylesheet. */
+ * Noctalia writes this file to ~/.config/gtk-3.0/colors.css. kde-gtk-config's
+ * GTK3 module (GTK3_MODULES) watches that file and reloads the CSS provider
+ * whenever it changes, so running GTK3 apps pick up new colors immediately. */
+
+@import url("noctalia.css");
 
 /* Overall left inset of the window controls. */
 headerbar box.left {
