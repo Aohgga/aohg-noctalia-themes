@@ -35,6 +35,8 @@ number() {
 height=$(number "$(read_toml "$umbriel_config" "appearance.title_bar" "height")" 28)
 size=$(number "$(read_toml "$umbriel_config" "appearance.title_bar" "button_size")" -1)
 gap=$(number "$(read_toml "$umbriel_config" "appearance.title_bar" "button_gap")" 8)
+padding=$(number "$(read_toml "$umbriel_config" "appearance.title_bar" "button_padding")" -1)
+radius=$(number "$(read_toml "$umbriel_config" "appearance" "corner_radius")" 0)
 
 [ "$height" -lt 1 ] && height=28
 
@@ -60,11 +62,39 @@ fi
 if [ "$diameter" -lt 15 ]; then
     diameter=15
 fi
-gap_half=$(( gap / 8 ))
+
+# 与 umbriel 的 titleBarLayout() 对齐：左边距 = max(button_padding, 圆角内缩)，
+# 按钮间距 = button_gap（GTK3 用左右 margin 各一半）。
+vertical_inset=$(( (height - diameter) / 2 ))
+[ "$vertical_inset" -lt 0 ] && vertical_inset=0
+corner_inset=0
+if [ "$radius" -gt "$vertical_inset" ]; then
+    corner_inset=$(awk -v r="$radius" -v y="$vertical_inset" 'BEGIN { d = r - sqrt(y * (2 * r - y)); c = int(d); if (c < d) c++; print c + 1 }')
+fi
+literal_padding=$padding
+[ "$literal_padding" -lt 0 ] && literal_padding=$vertical_inset
+[ "$literal_padding" -lt "$corner_inset" ] && literal_padding=$corner_inset
+# GTK3 按钮取最小尺寸。
+diameter=$(( diameter - 2 ))
+[ "$diameter" -lt 8 ] && diameter=8
+gap_half=$(( gap / 2 - 3 ))
+[ "$gap_half" -lt 1 ] && gap_half=1
+literal_padding=$(( literal_padding - 3 ))
+[ "$literal_padding" -lt 0 ] && literal_padding=0
+
+# 按钮圆角跟随 umbriel：button_corner_radius=-1 时用窗口圆角，并限制在直径一半内。
+button_radius=$(number "$(read_toml "$umbriel_config" "appearance.title_bar" "button_corner_radius")" -1)
+if [ "$button_radius" -lt 0 ]; then
+    button_radius=$radius
+fi
+max_radius=$(( diameter / 2 ))
+[ "$button_radius" -gt "$max_radius" ] && button_radius=$max_radius
 
 mkdir -p "$(dirname "$input_file")"
 sed \
     -e "s/__UMBRIEL_BUTTON_SIZE__/${diameter}/g" \
+    -e "s/__UMBRIEL_BUTTON_RADIUS__/${button_radius}/g" \
+    -e "s/__UMBRIEL_BUTTON_PADDING__/${literal_padding}/g" \
     -e "s/__UMBRIEL_BUTTON_GAP_HALF__/${gap_half}/g" \
     "$template" > "$input_file"
 
