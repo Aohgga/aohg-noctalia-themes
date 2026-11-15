@@ -75,10 +75,10 @@ literal_padding=$padding
 [ "$literal_padding" -lt 0 ] && literal_padding=$vertical_inset
 [ "$literal_padding" -lt "$corner_inset" ] && literal_padding=$corner_inset
 # GTK3 按钮取最小尺寸。
-diameter=$(( diameter - 2 ))
+diameter=$diameter
 [ "$diameter" -lt 8 ] && diameter=8
-gap_half=$(( gap / 2 - 3 ))
-[ "$gap_half" -lt 1 ] && gap_half=1
+# 按钮间距 3px（左右各 1.5px）
+gap_half="1.5"
 literal_padding=$(( literal_padding - 3 ))
 [ "$literal_padding" -lt 0 ] && literal_padding=0
 
@@ -87,13 +87,17 @@ button_radius=$(number "$(read_toml "$umbriel_config" "appearance.title_bar" "bu
 if [ "$button_radius" -lt 0 ]; then
     button_radius=$radius
 fi
-max_radius=$(( diameter / 2 ))
-[ "$button_radius" -gt "$max_radius" ] && button_radius=$max_radius
+if [ "$button_radius" -ge $(( diameter / 2 )) ]; then
+    radius_css="9999px"
+else
+    radius_css="${button_radius}px"
+fi
+
 
 mkdir -p "$(dirname "$input_file")"
 sed \
     -e "s/__UMBRIEL_BUTTON_SIZE__/${diameter}/g" \
-    -e "s/__UMBRIEL_BUTTON_RADIUS__/${button_radius}/g" \
+    -e "s/__UMBRIEL_BUTTON_RADIUS__/${radius_css}/g" \
     -e "s/__UMBRIEL_BUTTON_PADDING__/${literal_padding}/g" \
     -e "s/__UMBRIEL_BUTTON_GAP_HALF__/${gap_half}/g" \
     "$template" > "$input_file"
