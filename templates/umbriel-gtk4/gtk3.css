@@ -15,7 +15,7 @@ button.titlebutton {
   min-width: __UMBRIEL_BUTTON_SIZE__px;
   min-height: __UMBRIEL_BUTTON_SIZE__px;
   padding: 0;
-  margin: 0 2px 0 1px;
+  margin: 0 __UMBRIEL_BUTTON_GAP_RIGHT__px 0 __UMBRIEL_BUTTON_GAP_LEFT__px;
   border-radius: __UMBRIEL_BUTTON_RADIUS__;
   background-image: none;
   background-color: transparent;

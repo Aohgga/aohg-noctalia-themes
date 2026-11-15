@@ -77,8 +77,9 @@ literal_padding=$padding
 # GTK3 按钮取最小尺寸。
 diameter=$diameter
 [ "$diameter" -lt 8 ] && diameter=8
-# 按钮间距 3px（左右各 1.5px）
-gap_half="1.5"
+# 按钮间距跟随 umbriel：偶数左右对称，奇数左少右多。
+gap_left=$(( gap / 2 ))
+gap_right=$(( gap - gap_left ))
 literal_padding=$(( literal_padding - 3 ))
 [ "$literal_padding" -lt 0 ] && literal_padding=0
 
@@ -99,7 +100,8 @@ sed \
     -e "s/__UMBRIEL_BUTTON_SIZE__/${diameter}/g" \
     -e "s/__UMBRIEL_BUTTON_RADIUS__/${radius_css}/g" \
     -e "s/__UMBRIEL_BUTTON_PADDING__/${literal_padding}/g" \
-    -e "s/__UMBRIEL_BUTTON_GAP_HALF__/${gap_half}/g" \
+    -e "s/__UMBRIEL_BUTTON_GAP_LEFT__/${gap_left}/g" \
+    -e "s/__UMBRIEL_BUTTON_GAP_RIGHT__/${gap_right}/g" \
     "$template" > "$input_file"
 
 printf '%s\n' "$input_file"
