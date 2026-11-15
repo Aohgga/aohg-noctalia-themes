@@ -56,8 +56,10 @@ else
 fi
 
 [ "$gap" -lt 0 ] && gap=8
-diameter=$(( diameter - 2 ))
-[ "$diameter" -lt 8 ] && diameter=8
+# 派生值下限 15px：与 GTK4/Zen 的按钮尺寸一致
+if [ "$diameter" -lt 15 ]; then
+    diameter=15
+fi
 gap_half=$(( gap / 8 ))
 
 mkdir -p "$(dirname "$input_file")"

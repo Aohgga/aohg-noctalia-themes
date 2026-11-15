@@ -66,9 +66,9 @@ fi
 
 [ "$gap" -lt 0 ] && gap=8
 
-# Nudge one pixel up from Umbriel's derived values, matching the GTK4 tweak.
-if [ $(( diameter % 2 )) -ne 0 ]; then
-    diameter=$(( diameter + 1 ))
+# 派生值下限 15px：14 补到 15，15/16 保持
+if [ "$diameter" -lt 15 ]; then
+    diameter=15
 fi
 gap_half=$(( gap / 2 + 1 ))
 

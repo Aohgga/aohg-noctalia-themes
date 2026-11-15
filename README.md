@@ -66,7 +66,7 @@ Noctalia 把 `gtk3.css` 渲染到 `~/.config/gtk-3.0/colors.css`。KDE 的 `libc
 - `[appearance.title_bar] button_gap` — 按钮间距
 - `[appearance.title_bar] button_corner_radius` — 按钮圆角；`-1` 跟随窗口圆角
 
-派生尺寸输出时：奇数 +1、偶数保持（保证偶数）。fcitx5 圆角规则：`corner_radius` 为 0/1 时直角，否则使用 mellow 默认 9.5px。
+派生尺寸输出时下限 15px：14 补到 15，15/16 保持（GTK4、GTK3、Zen 用同一规则，尺寸一致）。fcitx5 圆角规则：`corner_radius` 为 0/1 时直角，否则使用 mellow 默认 9.5px。
 
 ## License
 
