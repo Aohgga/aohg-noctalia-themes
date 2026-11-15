@@ -4,6 +4,14 @@
 
 一组 Noctalia 用户模板：umbriel 风格的窗口按钮（GTK4 / GTK3 / Firefox·Zen），以及 fcitx5 的 mellow 风格配色主题。
 
+## 截图
+
+| Umbriel 窗口按钮 + fcitx5 | Zen Browser |
+|---|---|
+| ![umbriel + fcitx5](screenshots/umbriel-fcitx5.png) | ![Zen Browser](screenshots/zen-browser.png) |
+| **libadwaita（GTK4）** | **GTK3（Seahorse）** |
+| ![libadwaita](screenshots/libadwaita.png) | ![GTK3](screenshots/gtk3.png) |
+
 ## 包含
 
 ### `templates/umbriel-gtk4/`
