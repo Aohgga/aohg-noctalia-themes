@@ -77,9 +77,16 @@ literal_padding=$padding
 # GTK3 按钮取最小尺寸。
 diameter=$diameter
 [ "$diameter" -lt 8 ] && diameter=8
-# 按钮间距跟随 umbriel：偶数左右对称，奇数左少右多。
-gap_left=$(( gap / 2 ))
-gap_right=$(( gap - gap_left ))
+# 按钮间距跟随 umbriel：偶数右比左多 1px（gap=8 → 左1右2），奇数左右相等（gap=9 → 左2右2）。
+base=$(( gap / 2 - 3 ))
+[ "$base" -lt 0 ] && base=0
+if [ $(( gap % 2 )) -eq 0 ]; then
+    gap_left=$base
+    gap_right=$(( base + 1 ))
+else
+    gap_left=$(( base + 1 ))
+    gap_right=$(( base + 1 ))
+fi
 literal_padding=$(( literal_padding - 3 ))
 [ "$literal_padding" -lt 0 ] && literal_padding=0
 
