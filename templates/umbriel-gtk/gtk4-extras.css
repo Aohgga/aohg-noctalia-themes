@@ -10,7 +10,7 @@ list row.row {
 }
 
 /* ---- hover / 选中 ---- */
-button:not(.flat):not(.image-button):not(.suggested-action):not(.destructive-action):not(.card):not(.pill):not(.text-button):hover,
+button:not(.flat):not(.image-button):not(.suggested-action):not(.destructive-action):not(.card):not(.pill):not(.text-button):not(.reset-button):hover,
 list.navigation-sidebar row:hover,
 listview row:hover,
 list row.row:hover {
@@ -85,6 +85,7 @@ headerbar button:not(.close):not(.maximize):not(.minimize):not(.text-button):hov
 }
 
 button:not(.flat):not(.image-button):not(.suggested-action):not(.destructive-action):not(.card):not(.pill).text-button,
+button:not(.flat):not(.image-button):not(.suggested-action):not(.destructive-action):not(.card):not(.pill).reset-button,
 button:not(.suggested-action):not(.close):not(.maximize):not(.minimize):checked,
 button:not(.suggested-action):not(.close):not(.maximize):not(.minimize):active,
 tab:checked {
