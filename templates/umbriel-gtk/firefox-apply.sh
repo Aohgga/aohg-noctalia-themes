@@ -3,7 +3,7 @@ set -euo pipefail
 
 config_home="${XDG_CONFIG_HOME:-$HOME/.config}"
 cache="${XDG_CACHE_HOME:-$HOME/.cache}"
-buttons_css="$cache/noctalia/umbriel-gtk4/firefox-buttons.css"
+buttons_css="$cache/noctalia/umbriel-gtk/firefox-buttons.css"
 import_line='@import url("umbriel-buttons.css");'
 
 [ -f "$buttons_css" ] || exit 0
@@ -37,8 +37,8 @@ for profile in "${profiles[@]}"; do
     user_chrome="$chrome/userChrome.css"
     touch "$user_chrome"
     # Drop the old absolute-path import from earlier versions.
-    if grep -qF 'umbriel-gtk4/firefox-buttons.css' "$user_chrome"; then
-        sed -i '/umbriel-gtk4\/firefox-buttons\.css/d' "$user_chrome"
+    if grep -qF 'umbriel-gtk/firefox-buttons.css' "$user_chrome"; then
+        sed -i '/umbriel-gtk\/firefox-buttons\.css/d' "$user_chrome"
     fi
     # Insert after the last @import so these rules load after Zen's own
     # userChrome styles and win the colour cascade.

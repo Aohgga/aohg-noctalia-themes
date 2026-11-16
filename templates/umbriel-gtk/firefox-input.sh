@@ -2,9 +2,9 @@
 set -euo pipefail
 
 config_home="${XDG_CONFIG_HOME:-$HOME/.config}"
-template="$config_home/noctalia/templates/umbriel-gtk4/gtk4.css"
+template="$config_home/noctalia/templates/umbriel-gtk/firefox-buttons.css"
 umbriel_config="$config_home/umbriel/config.toml"
-input_file="${XDG_CACHE_HOME:-$HOME/.cache}/noctalia/umbriel-gtk4/gtk4-input.css"
+input_file="${XDG_CACHE_HOME:-$HOME/.cache}/noctalia/umbriel-gtk/firefox-buttons-input.css"
 
 read_toml() {
     local file="$1" section="$2" key="$3"
@@ -57,8 +57,6 @@ else
     fi
 fi
 
-# button_corner_radius < 0 follows the window corner_radius; libadwaita caps the
-# radius at half the button, which turns it into a circle.
 [ "$button_radius" -lt 0 ] && button_radius=$corner_radius
 if [ "$button_radius" -ge $(( diameter / 2 )) ]; then
     css_radius="9999px"
@@ -72,13 +70,13 @@ fi
 if [ "$diameter" -lt 15 ]; then
     diameter=15
 fi
-gap=$(( gap + 1 ))
+gap_half=$(( gap / 2 + 1 ))
 
 mkdir -p "$(dirname "$input_file")"
 sed \
     -e "s/__UMBRIEL_BUTTON_SIZE__/${diameter}/g" \
     -e "s/__UMBRIEL_BUTTON_RADIUS__/${css_radius}/g" \
-    -e "s/__UMBRIEL_BUTTON_GAP__/${gap}/g" \
+    -e "s/__UMBRIEL_BUTTON_GAP_HALF__/${gap_half}/g" \
     "$template" > "$input_file"
 
 printf '%s\n' "$input_file"
