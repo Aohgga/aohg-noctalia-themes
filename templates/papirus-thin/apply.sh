@@ -197,14 +197,18 @@ build_full() {
 
 # 增量：只重写颜色相关链接
 build_incr() {
-  local src=$1 dest=$2 size name tmpl
+  local src=$1 dest=$2 size name tmpl list jobs
+  list="$(mktemp)"
   for size in $SIZES; do
     [[ -f "$dest/$size/places/.colorfiles" ]] || continue
     while IFS='|' read -r name tmpl; do
       [[ -n "$name" ]] || continue
-      ln -sfn "$ROOT/${tmpl//%C%/$closest}" "$dest/$size/places/$name"
+      printf '%s\0%s\0' "$ROOT/${tmpl//%C%/$closest}" "$dest/$size/places/$name"
     done <"$dest/$size/places/.colorfiles"
-  done
+  done >"$list"
+  jobs="$(nproc 2>/dev/null || echo 4)"
+  xargs -0 -r -n2 -P"$jobs" ln -sfn <"$list"
+  rm -f "$list"
 }
 
 # Dark/Light 变体：骨架沿用系统图标，places 直接指向 Papirus 覆盖层，
@@ -255,6 +259,17 @@ ensure_variant() {
 }
 
 ROOT="$(find_src Papirus)" || { echo "papirus-thin: 未找到 Papirus" >&2; exit 0; }
+
+# 颜色没变且 Dark/Light 都已就绪：直接退出
+if [[ $SAME -eq 1 ]]; then
+  fresh=1
+  for v in Papirus-Dark Papirus-Light; do
+    vsrc="$(find_src "$v")" || { fresh=0; break; }
+    [[ -f "$HOME/.local/share/icons/$v/.papirus-thin-src" ]] || { fresh=0; break; }
+    [[ "$(cat "$HOME/.local/share/icons/$v/.papirus-thin-src")" == "$vsrc" ]] || { fresh=0; break; }
+  done
+  [[ $fresh -eq 1 ]] && exit 0
+fi
 
 if [[ -d "$DEST" && ! -f "$DEST/.papirus-thin-src" ]]; then
   echo "papirus-thin: 跳过 $DEST（已存在且不是本模板建的目录）" >&2
