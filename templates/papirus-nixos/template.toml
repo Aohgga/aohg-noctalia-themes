@@ -1,8 +1,8 @@
-[catalog.papirus-thin]
-name = "Papirus Thin Overlay"
+[catalog.papirus-nixos]
+name = "Papirus (NixOS overlay)"
 category = "system"
 
-[templates.papirus_thin]
+[templates.papirus_nixos]
 input_path = "colors"
 output_path = "colors-final"
 post_hook = "bash '{{ config_dir }}/apply.sh'"
