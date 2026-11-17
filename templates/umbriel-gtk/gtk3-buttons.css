@@ -1,3 +1,5 @@
+@import url("noctalia.css");
+@import url("colors-extras.css");
 /* Noctalia 用户模板：GTK3 窗口按钮（Umbriel 风格）。
  * Noctalia 将本文件渲染为 ~/.config/gtk-3.0/colors.css，
  * 主题变化时 GTK3 应用会重新读取。
