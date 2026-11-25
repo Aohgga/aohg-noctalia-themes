@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
-# papirus — 为 Papirus 建薄覆盖层：只建目录骨架和 folder 链接，不复制整个主题。
+# papirus-nixos — 为 Papirus 建薄覆盖层：只建目录骨架和 folder 链接，不复制整个主题。
 # 文件夹颜色跟随 Noctalia 渲染出的 colors-final。
 #
 # 性能：首次（或 Papirus 包更新后）完整建一次；之后颜色变化只重写
 # places 里的 folder 链接，不碰目录骨架、不重扫全部图标。
 set -euo pipefail
+: "${USER:=$(id -un)}"
 
 CONFIG_DIR="$(cd "$(dirname "$0")" && pwd)"
 COLOR_FILE="$CONFIG_DIR/colors-final"
@@ -82,7 +83,7 @@ closest="$(
     print best
   }'
 )"
-[[ -n "$closest" ]] || { echo "papirus: 没有匹配的颜色" >&2; exit 0; }
+[[ -n "$closest" ]] || { echo "papirus-nixos: 没有匹配的颜色" >&2; exit 0; }
 
 colors=()
 for pair in $MAPPING; do colors+=("${pair%%:*}"); done
@@ -98,10 +99,18 @@ if [[ -z "${PAPIRUS_THIN_FORCE:-}" ]] &&
   SAME=1
 fi
 
-# 找系统 Papirus：只走标准 XDG_DATA_DIRS，不假设发行版把图标装在哪。
+# 找系统 Papirus：XDG_DATA_DIRS + systemPackages / home-manager / nix profile
 dirs=()
-IFS=: read -ra dirs <<<"${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
-dirs+=("/usr/local/share" "/usr/share")
+IFS=: read -ra dirs <<<"${XDG_DATA_DIRS:-}"
+for d in \
+  "/run/current-system/sw/share" \
+  "/etc/profiles/per-user/${USER}/share" \
+  "$HOME/.local/state/nix/profiles/home-manager/share" \
+  "$HOME/.nix-profile/share" \
+  "/usr/local/share" \
+  "/usr/share"; do
+  dirs+=("$d")
+done
 
 find_src() {
   local v=$1 d
@@ -238,7 +247,7 @@ ensure_variant() {
     return 0
   fi
   if [[ -d "$vdest" && ! -f "$vdest/.papirus-thin-src" ]]; then
-    echo "papirus: 跳过 $vdest（已存在且不是本模板建的目录）" >&2
+    echo "papirus-nixos: 跳过 $vdest（已存在且不是本模板建的目录）" >&2
     return 0
   fi
   rm -rf "$vdest"
@@ -276,7 +285,7 @@ ensure_variant() {
   done
 }
 
-ROOT="$(find_src Papirus)" || { echo "papirus: 未找到 Papirus" >&2; exit 0; }
+ROOT="$(find_src Papirus)" || { echo "papirus-nixos: 未找到 Papirus" >&2; exit 0; }
 
 # 颜色没变且 Dark/Light 都已就绪：直接退出
 if [[ $SAME -eq 1 ]]; then
@@ -290,7 +299,7 @@ if [[ $SAME -eq 1 ]]; then
 fi
 
 if [[ -d "$DEST" && ! -f "$DEST/.papirus-thin-src" ]]; then
-  echo "papirus: 跳过 $DEST（已存在且不是本模板建的目录）" >&2
+  echo "papirus-nixos: 跳过 $DEST（已存在且不是本模板建的目录）" >&2
   exit 0
 fi
 
