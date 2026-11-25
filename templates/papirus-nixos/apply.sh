@@ -18,40 +18,67 @@ TARGET="${TARGET:0:6}"
 
 MAPPING="$(printf '%s\n' "${lines[@]}" | sed '/^[[:space:]]*$/d' | tail -n1)"
 
-# HSV 最近色，和上游 papirus-icons 模板一致
+# CIEDE2000 最近色：Papirus 只有固定的一批颜色，之前的 HSV 距离把色相按双方
+# 饱和度加权，浅色强调色会被低饱和的 palebrown/brown 抢走（粉色主题变米色）；
+# 改用感知均匀的 Lab 距离（CIEDE2000），选色和肉眼判断一致。
 closest="$(
-  awk -v r="${TARGET:0:2}" -v g="${TARGET:2:2}" -v b="${TARGET:4:2}" -v m="$MAPPING" '
+  awk -v hex="$TARGET" -v m="$MAPPING" '
   function hex2dec(h,   i,c,v,digits) {
     digits = "0123456789abcdef"; h = tolower(h); v = 0
     for (i=1; i<=length(h); i++) v = v*16 + (index(digits, substr(h,i,1)) - 1)
     return v
   }
-  function rgb2hsv(r,g,b,   mx,mn,d,h,s,v,t) {
-    r/=255; g/=255; b/=255
-    mx=(r>g)?(r>b?r:b):(g>b?g:b); mn=(r<g)?(r<b?r:b):(g<b?g:b)
-    v=mx; d=mx-mn
-    if (d==0) { s=0; h=0 }
+  function srgb_lin(c) { return c <= 0.04045 ? c/12.92 : ((c+0.055)/1.055)^2.4 }
+  function labf(t) { return t > 0.008856 ? t^(1/3) : 7.787*t + 16/116 }
+  function rgb2lab(hex,   r,g,b,R,G,B,X,Y,Z) {
+    r = hex2dec(substr(hex,1,2)); g = hex2dec(substr(hex,3,2)); b = hex2dec(substr(hex,5,2))
+    R = srgb_lin(r/255); G = srgb_lin(g/255); B = srgb_lin(b/255)
+    X = (R*0.4124564 + G*0.3575761 + B*0.1804375) / 0.95047
+    Y = (R*0.2126729 + G*0.7151522 + B*0.0721750)
+    Z = (R*0.0193339 + G*0.1191920 + B*0.9503041) / 1.08883
+    LB_L = 116*labf(Y) - 16
+    LB_A = 500*(labf(X) - labf(Y))
+    LB_B = 200*(labf(Y) - labf(Z))
+  }
+  function de2000(L1,A1,B1,L2,A2,B2,   C1,C2,CB,G,A1p,A2p,C1p,C2p,H1p,H2p,dLp,dCp,dHp,dhp,Lbp,Cbp,Hbp,T,dth,RC,SL,SC,SH,RTv,PI) {
+    PI = 3.141592653589793
+    C1 = sqrt(A1*A1 + B1*B1); C2 = sqrt(A2*A2 + B2*B2); CB = (C1+C2)/2
+    G = 0.5*(1 - sqrt(CB^7/(CB^7 + 25^7)))
+    A1p = (1+G)*A1; A2p = (1+G)*A2
+    C1p = sqrt(A1p*A1p + B1*B1); C2p = sqrt(A2p*A2p + B2*B2)
+    H1p = atan2(B1,A1p)*180/PI; if (H1p < 0) H1p += 360
+    H2p = atan2(B2,A2p)*180/PI; if (H2p < 0) H2p += 360
+    dLp = L2-L1; dCp = C2p-C1p
+    if (C1p*C2p == 0) { dHp = 0 }
     else {
-      s=d/mx
-      if (mx==r) { t=(g-b)/d; if(t<0) t+=6; h=60*t }
-      else if (mx==g) { h=60*(((b-r)/d)+2) }
-      else { h=60*(((r-g)/d)+4) }
+      dhp = H2p-H1p
+      if (dhp > 180) dhp -= 360
+      else if (dhp < -180) dhp += 360
+      dHp = 2*sqrt(C1p*C2p)*sin(dhp*PI/360)
     }
-    return h SUBSEP s SUBSEP v
+    Lbp = (L1+L2)/2; Cbp = (C1p+C2p)/2
+    if (C1p*C2p == 0) { Hbp = H1p+H2p }
+    else if ((H1p-H2p < 0 ? H2p-H1p : H1p-H2p) > 180) {
+      Hbp = (H1p+H2p < 360) ? (H1p+H2p+360)/2 : (H1p+H2p-360)/2
+    } else { Hbp = (H1p+H2p)/2 }
+    T = 1 - 0.17*cos((Hbp-30)*PI/180) + 0.24*cos(2*Hbp*PI/180) \
+          + 0.32*cos((3*Hbp+6)*PI/180) - 0.20*cos((4*Hbp-63)*PI/180)
+    dth = 30*exp(-((Hbp-275)/25)^2)
+    RC = 2*sqrt(Cbp^7/(Cbp^7 + 25^7))
+    SL = 1 + 0.015*(Lbp-50)^2/sqrt(20 + (Lbp-50)^2)
+    SC = 1 + 0.045*Cbp
+    SH = 1 + 0.015*Cbp*T
+    RTv = -sin(2*dth*PI/180)*RC
+    return sqrt((dLp/SL)^2 + (dCp/SC)^2 + (dHp/SH)^2 + RTv*(dCp/SC)*(dHp/SH))
   }
   BEGIN {
-    WH=10; WS=1; WV=0.3
-    split(rgb2hsv(hex2dec(r),hex2dec(g),hex2dec(b)), tgt, SUBSEP)
-    th=tgt[1]+0; ts=tgt[2]+0; tv=tgt[3]+0
-    n=split(m, arr)
+    n = split(m, arr)
+    rgb2lab(hex); tL = LB_L; tA = LB_A; tB = LB_B
     for (i=1; i<=n; i++) {
       split(arr[i], p, ":")
-      split(rgb2hsv(hex2dec(substr(p[2],1,2)),hex2dec(substr(p[2],3,2)),hex2dec(substr(p[2],5,2))), c, SUBSEP)
-      ch=c[1]+0; cs=c[2]+0; cv=c[3]+0
-      dh=th-ch; if(dh<0) dh=-dh; if(dh>180) dh=360-dh; dh/=180
-      ds=ts-cs; dv=tv-cv
-      d=WH*(ts*cs)*dh*dh + WS*ds*ds + WV*dv*dv
-      if (min=="" || d<min) { min=d; best=p[1] }
+      rgb2lab(p[2])
+      d = de2000(tL, tA, tB, LB_L, LB_A, LB_B)
+      if (min == "" || d < min) { min = d; best = p[1] }
     }
     print best
   }'

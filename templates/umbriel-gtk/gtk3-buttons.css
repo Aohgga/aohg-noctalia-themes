@@ -64,12 +64,6 @@ headerbar button.titlebutton.minimize:active,
 button.titlebutton.minimize:active {
   background-color: {{ colors.secondary.default.hex | darken 8 }};
 }
-window.maximized headerbar button.titlebutton,
-window.maximized button.titlebutton,
-window:maximized headerbar button.titlebutton,
-window:maximized button.titlebutton {
-  border-radius: 0;
-}
 headerbar button.titlebutton:active,
 headerbar button.titlebutton:checked {
   outline: none;

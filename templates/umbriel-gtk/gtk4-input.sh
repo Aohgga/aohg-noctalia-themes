@@ -38,22 +38,6 @@ gap=$(number "$(read_toml "$umbriel_config" "appearance.title_bar" "button_gap")
 button_radius=$(number "$(read_toml "$umbriel_config" "appearance.title_bar" "button_corner_radius")" -1)
 corner_radius=$(number "$(read_toml "$umbriel_config" "appearance" "corner_radius")" 10)
 
-darkly_rc="${XDG_CONFIG_HOME:-$HOME/.config}/darklyrc"
-darkly_radius=$(number "$(read_toml "$darkly_rc" "Common" "CornerRadius")" 6)
-darkly_button_height=$(number "$(read_toml "$darkly_rc" "Common" "ButtonHeight")" 1)
-darkly_button_px=$(awk -v v="$darkly_button_height" 'BEGIN { h = v * 34; if (h < 0) h = 0; printf "%d", int(h + 0.5) }')
-darkly_full_outline=$(read_toml "$darkly_rc" "Style" "FullOutline")
-case "$darkly_full_outline" in true|True|TRUE|1) darkly_outline=1 ;; *) darkly_outline=0 ;; esac
-
-darkly_sunken=$(read_toml "$darkly_rc" "Common" "SunkenEffect")
-case "$darkly_sunken" in true|True|TRUE|1) darkly_sunken_css="inset 0 1px 2px rgba(0,0,0,0.45)" ;; *) darkly_sunken_css="none" ;; esac
-
-darkly_new_checkbox=$(read_toml "$darkly_rc" "Common" "UseNewCheckBox")
-case "$darkly_new_checkbox" in true|True|TRUE|1|"") darkly_check_radius=$darkly_radius ;; *) darkly_check_radius=0 ;; esac
-
-darkly_menu_focus=$(read_toml "$darkly_rc" "Style" "MenuItemDrawStrongFocus")
-case "$darkly_menu_focus" in false|False|FALSE|0) darkly_menu_focus_width=0 ;; *) darkly_menu_focus_width=1 ;; esac
-
 [ "$height" -lt 1 ] && height=28
 
 # Mirrors titleBarButtonDiameter() in umbriel's src/scene/ssd_frame_geometry.cpp.
@@ -95,20 +79,12 @@ sed \
     -e "s/__UMBRIEL_BUTTON_SIZE__/${diameter}/g" \
     -e "s/__UMBRIEL_BUTTON_RADIUS__/${css_radius}/g" \
     -e "s/__UMBRIEL_BUTTON_GAP__/${gap}/g" \
-    -e "s/__DARKLY_CORNER_RADIUS__/${darkly_radius}/g" \
-    -e "s/__DARKLY_BUTTON_HEIGHT__/${darkly_button_px}/g" \
-    -e "s/__DARKLY_OUTLINE_WIDTH__/${darkly_outline}/g" \
-    -e "s/__DARKLY_SUNKEN_SHADOW__/${darkly_sunken_css}/g" \
-    -e "s/__DARKLY_CHECK_RADIUS__/${darkly_check_radius}/g" \
-    -e "s/__DARKLY_MENU_FOCUS__/${darkly_menu_focus_width}/g" \
     "$template" > "$input_file"
 
 extras_template="$config_home/noctalia/templates/umbriel-gtk/gtk4-extras.css"
 if [ -f "$extras_template" ]; then
     sed \
-        -e "s/__DARKLY_CORNER_RADIUS__/${darkly_radius}/g" \
-        -e "s/__DARKLY_OUTLINE_WIDTH__/${darkly_outline}/g" \
-        -e "s/__DARKLY_MENU_FOCUS__/${darkly_menu_focus_width}/g" \
+        -e "s/__UMBRIEL_CORNER_RADIUS__/${corner_radius}/g" \
         "$extras_template" > "$(dirname "$input_file")/gtk4-extras-input.css"
 fi
 

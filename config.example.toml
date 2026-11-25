@@ -8,7 +8,7 @@ output_path = "$XDG_CONFIG_HOME/gtk-4.0/umbriel.css"
 pre_hook    = "bash \"$HOME/.config/noctalia/templates/umbriel-gtk/gtk4-input.sh\" > /dev/null"
 post_hook   = "bash \"$HOME/.config/noctalia/templates/umbriel-gtk/gtk4-apply.sh\""
 
-# GTK4 其他样式（hover、菜单、列表、toggle-group 等）
+# GTK4 圆角（列表、菜单、toggle-group、按钮等，不含配色）
 [theme.templates.user.umbriel_gtk4_extras]
 input_path  = "$XDG_CACHE_HOME/noctalia/umbriel-gtk/gtk4-extras-input.css"
 output_path = "$XDG_CONFIG_HOME/gtk-4.0/umbriel-extras.css"
@@ -19,13 +19,16 @@ post_hook   = "bash \"$HOME/.config/noctalia/templates/umbriel-gtk/gtk4-apply.sh
 [theme.templates.user.umbriel_gtk3]
 input_path  = "$XDG_CACHE_HOME/noctalia/umbriel-gtk/gtk3-buttons-input.css"
 output_path = "$XDG_CONFIG_HOME/gtk-3.0/colors.css"
+# colors.css 触发 libcolorreload 重载，要排在 extras 之后渲染
+index       = 2
 pre_hook    = "bash \"$HOME/.config/noctalia/templates/umbriel-gtk/gtk3-input.sh\" > /dev/null"
 post_hook   = "bash \"$HOME/.config/noctalia/templates/umbriel-gtk/gtk3-apply.sh\""
 
-# GTK3 其他样式（hover、菜单、轮廓等）
+# GTK3 圆角（不含配色）
 [theme.templates.user.umbriel_gtk3_extras]
 input_path  = "$XDG_CACHE_HOME/noctalia/umbriel-gtk/gtk3-extras-input.css"
 output_path = "$XDG_CONFIG_HOME/gtk-3.0/colors-extras.css"
+index       = 1
 pre_hook    = "bash \"$HOME/.config/noctalia/templates/umbriel-gtk/gtk3-input.sh\" > /dev/null"
 post_hook   = "bash \"$HOME/.config/noctalia/templates/umbriel-gtk/gtk3-apply.sh\""
 
@@ -36,10 +39,20 @@ output_path = "$XDG_CACHE_HOME/noctalia/umbriel-gtk/firefox-buttons.css"
 pre_hook    = "bash \"$HOME/.config/noctalia/templates/umbriel-gtk/firefox-input.sh\" > /dev/null"
 post_hook   = "bash \"$HOME/.config/noctalia/templates/umbriel-gtk/firefox-apply.sh\""
 
+# Papirus 文件夹配色（跟随主题强调色）
+[theme.templates.user.papirus_nixos]
+input_path  = "~/.config/noctalia/templates/papirus-nixos/colors"
+output_path = "~/.config/noctalia/templates/papirus-nixos/colors-final"
+post_hook   = "bash \"$HOME/.config/noctalia/templates/papirus-nixos/apply.sh\""
+
 # fcitx5 mellow 风格主题
 [theme.templates.user.fcitx5_mellow_conf]
 input_path  = "~/.config/noctalia/templates/fcitx5-mellow/theme.conf"
 output_path = "$XDG_DATA_HOME/fcitx5/themes/noctalia-mellow/theme.conf"
+# apply.sh 要 sed 两个 SVG 的圆角，必须等它们渲染完；index 是全局升序，
+# 不设就是 0。hook_async 默认 true，这里改同步。
+index       = 3
+hook_async  = false
 post_hook   = "bash \"$HOME/.config/noctalia/templates/fcitx5-mellow/apply.sh\""
 
 [theme.templates.user.fcitx5_mellow_panel]
