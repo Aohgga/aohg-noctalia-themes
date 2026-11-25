@@ -32,7 +32,7 @@ extras 只改圆角，不设置任何颜色 —— 配色由 noctalia 生成的 
 
 **只想用窗口圆点按钮**：保留 `gtk4-buttons.css` + `gtk4-input.sh` + `gtk4-apply.sh`（GTK4）或 `gtk3-buttons.css` + `gtk3-input.sh` + `gtk3-apply.sh`（GTK3），去掉 extras 对应的条目即可。
 
-### `templates/papirus-nixos/`
+### `templates/papirus/`
 
 | 文件 | 作用 |
 |---|---|
@@ -51,8 +51,11 @@ extras 只改圆角，不设置任何颜色 —— 配色由 noctalia 生成的 
 
 ## 依赖
 
+- noctalia（提供模板引擎和调色板）
 - umbriel（提供 `[appearance] corner_radius` 和 `[appearance.title_bar]` 的按钮参数）
 - 可选 `papirus-icon-theme`（只用 Papirus 模板时需要）
+
+不依赖特定发行版或包管理器：模板文件放在 `~/.config/noctalia/templates/`，Papirus 通过标准的 `XDG_DATA_DIRS` 定位。
 
 ## 安装
 
@@ -62,7 +65,7 @@ extras 只改圆角，不设置任何颜色 —— 配色由 noctalia 生成的 
    cp -r templates/* ~/.config/noctalia/templates/
    ```
 
-2. 把 [config.example.toml](config.example.toml) 里的 `[theme.templates.user.*]` 合并到 `~/.config/noctalia/config.toml`（NixOS / home-manager 用户请合并到 HM 生成的 config.toml）。
+2. 把 [config.example.toml](config.example.toml) 里的 `[theme.templates.user.*]` 合并到 `~/.config/noctalia/config.toml`。
 
 3. 重启 Noctalia 或切换一次壁纸/主题，触发模板渲染。
 
